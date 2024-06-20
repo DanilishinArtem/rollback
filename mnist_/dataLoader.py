@@ -2,9 +2,13 @@ from datasets import load_dataset
 from datasets import load_from_disk
 from torchvision import transforms
 
+from mnist_.config import Config
+
+
+config = Config()
 
 def load_mnist_dataset():
-    dataset = load_from_disk("/home/adanilishin/rollback/mnist/mnist_dataset")
+    dataset = load_from_disk(config.pathToData)
     # dataset = load_dataset("mnist")
     # dataset.save_to_disk("./mnist_dataset")
     transform = transforms.Compose([

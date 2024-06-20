@@ -5,4 +5,5 @@ class Config:
         self.learning_rate = 0.01
         self.num_epochs = 1
         self.split = 0.8
-        self.pathToLogs = "/home/adanilishin/Quantization/Lipshits/mnist/Logs"
+        self.pathToData = "/home/adanilishin/rollback/mnist_/mnist_dataset"
+        self.pathToLogs = "/home/adanilishin/rollback/logs"

@@ -83,8 +83,7 @@ class ExpMovingAverages:
         # find number of deffirences between gradsWithFaults and gradsWithoutFaults
         faults = 0
         for i in range(len(gradsWithoutFaults)):
-            if not torch.equal(gradsWithoutFaults[i], gradsWithFaults[i]):
-                    faults += 1
+            faults += (gradsWithFaults[i] != gradsWithoutFaults[i]).sum().item()
         return faults
 
 

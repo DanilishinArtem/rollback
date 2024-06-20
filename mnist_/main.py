@@ -2,8 +2,8 @@ import torch.optim as optim
 import torch.nn as nn
 from model import Model
 from torch.utils.tensorboard import SummaryWriter
-from mnist.config import Config
-from mnist.learningProcess import LearningProcess
+from mnist_.config import Config
+from mnist_.learningProcess import LearningProcess
 # from faultInjector.hookSetter import HookSetter
 from faultInjector.hookSetter import HookManager
 
