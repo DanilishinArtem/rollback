@@ -1,0 +1,10 @@
+conv1
+relu1
+conv2
+relu2
+pool
+flatten
+lin1
+relu3
+lin2
+log_softmax
