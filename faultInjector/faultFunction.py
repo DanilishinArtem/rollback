@@ -12,6 +12,9 @@ class FaultFunction:
         random_indices = torch.randint(0, input.numel(), (config.numFaults,))
         random_positions = torch.unravel_index(random_indices, input.shape)
         input[random_positions] = faultValue
+        # (64,128)
+        # idx = (30, 60)
+        # input[idx] = faultValue
 
     @staticmethod
     def randomFunction(input: torch.tensor):

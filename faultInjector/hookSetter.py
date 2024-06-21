@@ -36,3 +36,13 @@ class HookManager:
         for name, hook_handle in self.hooks.items():
             hook_handle.remove()
         self.hooks = {}
+
+    def set_hooks(self):
+        for name, layer in self.model.named_modules():
+            hook_handle = layer.register_backward_hook(self.gradient_hooks[name].hook)
+            self.gradient_hooks[name].freeze = False
+            self.hooks[name] = hook_handle
+
+    def freeze(self):
+        for name, layer in self.model.named_modules():
+            self.gradient_hooks[name].freeze = True

@@ -26,11 +26,14 @@ class GradientHook:
         self.layer = layer
         self.counter = 0
         self.duration = 0
+        self.freeze = False
 
     def hook(self, module, grad_input, grad_output):
-        self.counter += 1
+        if not self.freeze:
+            self.counter += 1
         if self.counter >= config.startFault and self.duration <= config.duration and self.name in config.nameLayer:
-            self.duration += 1
-            print("fault (gradient) for layer " + self.name + " was injected at time " + str(self.counter))
+            if not self.freeze:
+                self.duration += 1
+                print("fault (gradient) for layer " + self.name + " was injected")
             modified_grad_input = functionSetter((grad_input[0],))
             return (modified_grad_input,) + grad_input[1:]

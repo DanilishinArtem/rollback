@@ -8,6 +8,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 from detector.infoGetteer import ExpMovingAverages
 from faultInjector.hookSetter import HookManager
+import time
 
 
 class LearningProcess:
@@ -31,32 +32,49 @@ class LearningProcess:
         test_loader = DataLoader(test_dataset, batch_size=self.config.batch_size, shuffle=False)
         return train_loader, val_loader, test_loader
     
-    def train(self, model: nn.Module, hookManager: HookManager):
-        total_counter = 1
+    def train(self, model: nn.Module, hookManager: HookManager, detect: bool, detectionRate: bool, rollback: bool):
+        print("start training\n\n")
+        start = time.time()
+        total_counter = 0
         total_loss = 0
+        numberFaults = 0
+        correct = 0
+        numPic = 0
+        # hookManager.remove_hooks()
         for epoch in range(self.config.num_epochs):
             model.train()
             for batch in self.train_loader:
+                total_counter += 1
                 images, labels = batch["image"], batch["label"]
-
-                numberFaults = self.detector.numberFaults(hookManager, model, self.optimizer, self.criterion, images, labels)
-
+                if detectionRate and detect:
+                    numberFaults = self.detector.numberFaults_(hookManager, model, self.optimizer, self.criterion, images, labels)
                 self.optimizer.zero_grad()
                 output = model(images)
                 loss = self.criterion(output, labels)
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(labels.view_as(pred)).sum().item()
+                numPic += len(images)
                 loss.backward()
-                
-                detected_numberFaults = self.detector.detect()
 
-                if detected_numberFaults == 0:
-                    # implement rallback method for case > 0
-                    self.detector.update()
+                if detect:
+                    detected_numberFaults = self.detector.detectAndCorrect(total_counter, correct=rollback)
+                    if detected_numberFaults == 0:
+                        self.detector.update()
 
                 self.optimizer.step()
                 total_loss += loss.item()
-                total_counter += 1
+                self.writer.add_scalar("Loss/train", loss.item(), total_counter)
+                self.writer.add_scalar("Accuracy/train", correct / numPic, total_counter)
+                print("For step " + str(total_counter) + " training loss = " + str(round(total_loss / total_counter,2)) + " training accuracy = " + str(round(correct / numPic,2)))
+                
+                if detect and detectionRate:
+                    if numberFaults == 0:
+                        rate = 0
+                    else:
+                        rate = (detected_numberFaults / numberFaults) * 100
+                    self.writer.add_scalar("Rate of detection", rate, total_counter)
 
-                print("For step " + str(total_counter) + " training loss = " + str(round(total_loss / total_counter,2)) + ", number of faults = " + str(numberFaults) + ", detected number of faults = " + str(detected_numberFaults))
+        print("Training time: " + str(round(time.time() - start,2)) + " sec.")
 
     def validate(self, model: nn.Module):
         total_counter = 0

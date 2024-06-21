@@ -2,10 +2,10 @@
 
 
 class ConfigInjector:
-    startFault = 30
+    startFault = 100
     numFaults = 1000
     duration = 20
-    nameLayer = ["relu3"]
+    nameLayer = ["relu3", "relu2", "relu1"]
     # "impulsFunction", "randomFunction", "zeroFunction", "valueFunction", "magnitudeFunction"
     function = "impulsFunction"
-    faultValue = 1000
+    faultValue = 10000 # 1000000

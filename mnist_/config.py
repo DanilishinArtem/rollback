@@ -6,4 +6,7 @@ class Config:
         self.num_epochs = 1
         self.split = 0.8
         self.pathToData = "/home/adanilishin/rollback/mnist_/mnist_dataset"
-        self.pathToLogs = "/home/adanilishin/rollback/logs"
+        self.pathToLogs = "/home/adanilishin/rollback/logs/test"
+        self.detect = True
+        self.detectionRate = True
+        self.rollback = True
