@@ -37,6 +37,7 @@ class ExpMovingAverages:
 
     def detectAndCorrect(self, step, correct: bool):
         # self.step += 1
+        rate = 0.1
         anomalies = {}
         idx = 0
         faults = 0
@@ -54,10 +55,10 @@ class ExpMovingAverages:
                           anomalies[idx] = out_of_bounds.nonzero(as_tuple=True)
                           param.grad.data[out_of_bounds] = self.generate_normal_tensor_within_bounds(lowerBound[out_of_bounds], upperBound[out_of_bounds], param.grad.data[out_of_bounds])
                     idx += 1
-        if faults > 0:
-            print("[Detected]: total number of faults = " + str(faults))
+        # if faults > 0:
+        #     print("[Detected]: total number of faults = " + str(faults))
         return faults
-
+    
     def generate_normal_tensor_within_bounds(self, lower_bound, upper_bound, size):
         mean = (upper_bound + lower_bound) / 2
         std = (upper_bound - lower_bound) / 6
@@ -128,8 +129,5 @@ class ExpMovingAverages:
         for i in range(len(gradsWithoutFaults)):
             faults += (gradsWithFaults[i] != gradsWithoutFaults[i]).sum().item()
         return faults
-
-    def correct(self):
-        pass    
 
     
